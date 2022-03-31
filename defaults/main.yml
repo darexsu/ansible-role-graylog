@@ -1,0 +1,146 @@
+---
+# Graylog
+#    |
+# MongoDB
+#    |
+# Elasticsearch
+#    |
+# FirewallD
+
+# Graylog
+graylog:
+  enabled: true
+  version: "4.3"
+  repo: "graylog"
+  service:
+    enabled: true
+    state: "started"
+
+# Graylog -> install
+graylog_install:
+  enabled: true
+  packages: ["graylog-server", "graylog-integrations-plugins"]
+
+# Graylog -> config
+graylog_config:
+  enabled: true
+  file: "server.conf"
+  src: "server_conf.j2"
+  backup: true
+  data:
+    is_leader: "true"
+    node_id_file: "/etc/graylog/server/node-id"
+    password_secret: "RObxb6DltymSD5LQtUuRUEqJPHQW"  # Change me -> generate password_secret (pwgen -N 1 -s 28)
+    root_username: "admin"
+    root_password_sha2: "96e061a52a96166e6fec9013c3c219781bf6d511062250fa542241cb951b2c17"  # Change me -> generate sha256 (echo -n ${password_secret} | sha256sum)
+    bin_dir: "/usr/share/graylog-server/bin"
+    data_dir: "/var/lib/graylog-server"
+    plugin_dir: "/usr/share/graylog-server/plugin"
+    http_bind_address: "{{ ansible_default_ipv4.address | default('0.0.0.0') }}:9000"
+    http_publish_uri: "http://{{ ansible_default_ipv4.address | default('0.0.0.0') }}:9000/"
+    http_enable_gzip: "false"
+    elasticsearch_hosts: "http://localhost:9200"
+    rotation_strategy: "count"
+    elasticsearch_max_docs_per_index: "20000000"
+    elasticsearch_max_number_of_indices: "20"
+    retention_strategy: "delete"
+    elasticsearch_shards: "4"
+    elasticsearch_replicas: "0"
+    elasticsearch_index_prefix: "graylog"
+    allow_leading_wildcard_searches: "false"
+    allow_highlighting: "false"
+    elasticsearch_analyzer: "standard"
+    output_batch_size: "500"
+    output_flush_interval: "1"
+    output_fault_count_threshold: "5"
+    output_fault_penalty_seconds: "30"
+    processbuffer_processors: "5"
+    outputbuffer_processors: "3"
+    processor_wait_strategy: "blocking"
+    ring_size: "65536"
+    inputbuffer_ring_size: "65536"
+    inputbuffer_processors: "2"
+    inputbuffer_wait_strategy: "blocking"
+    message_journal_enabled: "true"
+    message_journal_dir: "/var/lib/graylog-server/journal"
+    lb_recognition_period_seconds: "3"
+    mongodb_uri: "mongodb://localhost/graylog"
+    mongodb_max_connections: "1000"
+    mongodb_threads_allowed_to_block_multiplier: "5"
+    proxied_requests_thread_pool_size: "32"
+
+# Graylog -> constants
+graylog_const:
+  RedHat:
+    dependencies: [gnupg, python3-pymongo]
+    graylog_repo: "https://packages.graylog2.org/repo/el/stable/{{ graylog.version }}/$basearch/"
+    graylog_gpg: "https://packages.graylog2.org/repo/el/stable/GPG-KEY-graylog"
+    elasticsearch_packages: "elasticsearch-7.10.*"
+  Debian:
+    dependencies: [apt-transport-https, openjdk-11-jdk, uuid-runtime, pwgen, dirmngr, gnupg, wget]
+    graylog_repo: "deb https://packages.graylog2.org/repo/debian/ stable {{ graylog.version }}"
+    graylog_gpg: "https://packages.graylog2.org/repo/debian/keyring.gpg"
+    elasticsearch_packages: "elasticsearch=7.10.*"
+  Ubuntu:
+    graylog_repo: "deb [ arch=amd64,arm64 ] https://repo.graylog.org/apt/{{ ansible_distribution | lower }} {{ ansible_distribution_release }}/graylog-org/{{ graylog.version }} multiverse"
+
+# MongoDB
+mongodb:
+  enabled: false
+  version: "4.4"
+  repo: "mongodb"
+  service:
+    enabled: true
+    state: "started"
+
+# MongoDB -> install
+mongodb_install:
+  enabled: false
+  packages: ["mongodb-org"]
+
+# ElasticSearch
+elasticsearch:
+  enabled: false
+  version: "7.x"
+  repo: "elastic"
+  service:
+    enabled: true
+    state: "started"
+
+# ElasticSearch -> install
+elasticsearch_install:
+  enabled: false
+  packages: ["{{ graylog_const[ansible_os_family]['elasticsearch_packages'] }}"]
+
+# ElasticSearch -> config -> elasticsearch.yml
+elasticsearch_yml:
+  enabled: false
+  file: "elasticsearch.yml"
+  src: "elasticsearch_yml.j2"
+  backup: true
+  data: |
+    cluster.name: graylog
+    path.data: /var/lib/elasticsearch
+    path.logs: /var/log/elasticsearch
+
+# FirewallD
+firewalld:
+  enabled: false
+  service:
+    enabled: true
+    state: "started"
+
+# FirewallD -> install
+firewalld_install:
+  enabled: false
+  packages: [firewalld]
+
+# FirewallD -> rules
+firewalld_rules:
+  graylog_gui_port:
+    enabled: false
+    zone: "public"
+    state: "enabled"
+    port: "9000/tcp"
+    permanent: true
+    immediate: true

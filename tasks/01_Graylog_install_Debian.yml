@@ -1,0 +1,31 @@
+---
+- name: ensure dependencies are installed.
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  with_items: "{{ graylog_const['Debian']['dependencies'] }}"
+
+- name: add graylog repo
+  block:
+    - name: add gpg key
+      ansible.builtin.apt_key:
+        url: "{{ graylog_const['Debian']['graylog_gpg'] }}"
+        state: present
+
+    - name: add graylog repo
+      ansible.builtin.apt_repository:
+        repo: "{{ graylog_const['Debian']['graylog_repo'] }}"
+        state: present
+  when: graylog.repo == "graylog"
+
+- name: install graylog packages
+  ansible.builtin.apt:
+    name: "{{ graylog_install.packages }}"
+    state: present
+    update_cache: true
+  ignore_errors: true
+
+- name: force systemd to reread configs
+  ansible.builtin.systemd:
+    daemon_reload: true

@@ -1,0 +1,54 @@
+---
+- name: merge dictionaries
+  block:
+    - include_vars:
+        file: ../../darexsu.graylog/defaults/main.yml
+        name: graylog_default_vars
+
+    - name: merge default and new dictionaries
+      set_fact:
+        "{{ item.key }}": "{{ graylog_default_vars[item.key] | combine(merge[item.key], recursive=True)}}"
+      when: graylog_default_vars[item.key] is defined
+      with_dict: "{{ merge }}"
+
+    - name: combine defaults vars with merge dictionary
+      set_fact:
+        merge: "{{ graylog_default_vars | combine(merge, recursive=True)}}"
+  when: merge is defined
+
+- name: graylog role is disabled
+  meta: end_play
+  when: not graylog.enabled
+
+- name: include role mongodb
+  include_role:
+    name: darexsu.mongodb
+  when: mongodb.enabled
+
+- name: include role elasticsearch
+  include_role:
+    name: darexsu.elasticsearch
+  when: elasticsearch.enabled
+
+- name: include role firewalld
+  include_role:
+    name: darexsu.firewalld
+  when: firewalld.enabled
+
+- name: "-> 01_Graylog_install_{{ ansible_os_family }}.yml"
+  include_tasks: "./tasks/01_Graylog_install_{{ ansible_os_family }}.yml"
+  when: graylog_install.enabled
+
+- name: service facts
+  ansible.builtin.service_facts:
+
+- name: "-> 02_Graylog_config.yml"
+  include_tasks: "./tasks/02_Graylog_config.yml"
+  when: graylog_config.enabled and ansible_facts.services is search("graylog-server")
+
+- name: "ensure graylog is {{ graylog['service']['state'] }}"
+  ansible.builtin.service:
+    name: graylog-server
+    state: "{{ graylog['service']['state'] }}"
+    enabled: "{{ graylog['service']['enabled'] }}"
+  when: ansible_facts.services is search("graylog-server")

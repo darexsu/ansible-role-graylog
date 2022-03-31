@@ -1,0 +1,11 @@
+---
+- name: configure graylog_config
+  ansible.builtin.template:
+    src: "{{ graylog_config.src }}"
+    dest: "/etc/graylog/server/{{ graylog_config.file }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ graylog_config.backup }}"
+  notify: restart graylog
+  when: graylog_config.enabled

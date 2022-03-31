@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  author: "darexsu"
+  role_name: "graylog"
+  description: "install and configure Graylog"
+  company: ""
+  license: "license (MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: Debian
+      versions:
+        - buster
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - xenial
+        - focal
+    - name: EL
+      versions:
+        - 7
+        - 8
+  galaxy_tags:
+    - graylog
