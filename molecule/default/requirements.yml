@@ -1,0 +1,6 @@
+---
+- name: darexsu.elasticsearch
+
+- name: darexsu.mongodb
+
+- name: darexsu.firewalld
