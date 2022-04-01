@@ -1,21 +1,21 @@
 ---
 - name: ensure dependencies are installed.
   ansible.builtin.package:
-    name: "{{ graylog_const['RedHat']['dependencies'] }}"
+    name: "{{ graylog_const[ansible_os_family]['dependencies'] }}"
     state: present
 
 - name: add graylog repo for redhat
   block:
     - name: import graylog gpg key
       ansible.builtin.rpm_key:
-        key: "{{ graylog_const['RedHat']['graylog_gpg'] }}"
+        key: "{{ graylog_const[ansible_os_family]['graylog_gpg'] }}"
         state: present
 
     - name: add graylog repository
       ansible.builtin.yum_repository:
         name: graylog
         description: Graylog YUM repo
-        baseurl: "{{ graylog_const['RedHat']['graylog_repo'] }}"
+        baseurl: "{{ graylog_const[ansible_os_family]['graylog_repo'] }}"
         gpgcheck: true
         enabled: true
         module_hotfixes: true
@@ -23,10 +23,9 @@
 
 - name: install graylog packages.
   ansible.builtin.package:
-    name: "{{ graylog_install.packages }}"
+    name: "{{ graylog_const[ansible_os_family]['packages'] }}"
     state: present
     update_cache: true
-  ignore_errors: true
 
 - name: force systemd to reread configs
   ansible.builtin.systemd:

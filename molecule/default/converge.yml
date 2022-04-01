@@ -22,7 +22,6 @@
       # Graylog -> install
       graylog_install:
         enabled: true
-        packages: ["graylog-server", "graylog-integrations-plugins"]
       # Graylog -> config
       graylog_config:
         enabled: true
@@ -82,7 +81,6 @@
       # MongoDB -> install
       mongodb_install:
         enabled: true
-        packages: ["mongodb-org"]
 
       # ElasticSearch
       elasticsearch:
@@ -95,7 +93,6 @@
       # ElasticSearch -> install
       elasticsearch_install:
         enabled: true
-        packages: ["{{ graylog_const[ansible_os_family]['elasticsearch_packages'] }}"]
       # ElasticSearch -> config -> elasticsearch.yml
       elasticsearch_yml:
         enabled: true
@@ -133,7 +130,6 @@
       # FirewallD -> install
       firewalld_install:
         enabled: false
-        packages: [firewalld]
       # FirewallD -> rules
       firewalld_rules:
         graylog_gui_port:

@@ -84,7 +84,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
       # Graylog -> install
       graylog_install:
         enabled: true
-        packages: ["graylog-server", "graylog-integrations-plugins"]
       # Graylog -> config
       graylog_config:
         enabled: true
@@ -144,7 +143,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
       # MongoDB -> install
       mongodb_install:
         enabled: true
-        packages: ["mongodb-org"]
 
       # ElasticSearch
       elasticsearch:
@@ -157,7 +155,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
       # ElasticSearch -> install
       elasticsearch_install:
         enabled: true
-        packages: ["{{ graylog_const[ansible_os_family]['elasticsearch_packages'] }}"]
       # ElasticSearch -> config -> elasticsearch.yml
       elasticsearch_yml:
         enabled: true
@@ -178,7 +175,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
       # FirewallD -> install
       firewalld_install:
         enabled: false
-        packages: [firewalld]
       # FirewallD -> rules
       firewalld_rules:
         graylog_gui_port:
@@ -298,7 +294,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
     # Graylog -> install
     graylog_install:
       enabled: true
-      packages: ["graylog-server", "graylog-integrations-plugins"]
     # Graylog -> config
     graylog_config:
       enabled: true
@@ -358,7 +353,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
     # MongoDB -> install
     mongodb_install:
       enabled: true
-      packages: ["mongodb-org"]
 
     # ElasticSearch
     elasticsearch:
@@ -371,7 +365,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
     # ElasticSearch -> install
     elasticsearch_install:
       enabled: true
-      packages: ["{{ graylog_const[ansible_os_family]['elasticsearch_packages'] }}"]
     # ElasticSearch -> config -> elasticsearch.yml
     elasticsearch_yml:
       enabled: true
@@ -392,7 +385,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
     # FirewallD -> install
     firewalld_install:
       enabled: false
-      packages: [firewalld]
     # FirewallD -> rules
     firewalld_rules:
       graylog_gui_port:
@@ -427,7 +419,6 @@ Your vars [host_vars]  -->  default vars [current role] --> default vars [includ
     # Graylog -> install
     graylog_install:
       enabled: true
-      packages: ["graylog-server", "graylog-integrations-plugins"]
 
   tasks:
     - name: role darexsu.graylog

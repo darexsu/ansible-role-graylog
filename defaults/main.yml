@@ -19,7 +19,6 @@ graylog:
 # Graylog -> install
 graylog_install:
   enabled: true
-  packages: ["graylog-server", "graylog-integrations-plugins"]
 
 # Graylog -> config
 graylog_config:
@@ -75,12 +74,12 @@ graylog_const:
     dependencies: [gnupg, python3-pymongo]
     graylog_repo: "https://packages.graylog2.org/repo/el/stable/{{ graylog.version }}/$basearch/"
     graylog_gpg: "https://packages.graylog2.org/repo/el/stable/GPG-KEY-graylog"
-    elasticsearch_packages: "elasticsearch-7.10.*"
+    packages: ["graylog-server", "graylog-integrations-plugins"]
   Debian:
     dependencies: [apt-transport-https, openjdk-11-jdk, uuid-runtime, pwgen, dirmngr, gnupg, wget]
     graylog_repo: "deb https://packages.graylog2.org/repo/debian/ stable {{ graylog.version }}"
     graylog_gpg: "https://packages.graylog2.org/repo/debian/keyring.gpg"
-    elasticsearch_packages: "elasticsearch=7.10.*"
+    packages: ["graylog-server", "graylog-integrations-plugins"]
   Ubuntu:
     graylog_repo: "deb [ arch=amd64,arm64 ] https://repo.graylog.org/apt/{{ ansible_distribution | lower }} {{ ansible_distribution_release }}/graylog-org/{{ graylog.version }} multiverse"
 
@@ -96,7 +95,6 @@ mongodb:
 # MongoDB -> install
 mongodb_install:
   enabled: false
-  packages: ["mongodb-org"]
 
 # ElasticSearch
 elasticsearch:
@@ -110,7 +108,6 @@ elasticsearch:
 # ElasticSearch -> install
 elasticsearch_install:
   enabled: false
-  packages: ["{{ graylog_const[ansible_os_family]['elasticsearch_packages'] }}"]
 
 # ElasticSearch -> config -> elasticsearch.yml
 elasticsearch_yml:
@@ -123,6 +120,18 @@ elasticsearch_yml:
     path.data: /var/lib/elasticsearch
     path.logs: /var/log/elasticsearch
 
+elasticsearch_const:
+  Debian:
+    dependencies: [apt-transport-https, gnupg2, ca-certificates, openjdk-11-jdk]
+    elastic_repo: "deb https://artifacts.elastic.co/packages/{{ elasticsearch.version }}/apt stable main"
+    elastic_gpg: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    packages: ["elasticsearch=7.10.*"]
+  RedHat:
+    dependencies: ["gnupg2", "java-11-openjdk"]
+    elastic_repo: "https://artifacts.elastic.co/packages/{{ elasticsearch.version }}/yum"
+    elastic_gpg: "https://artifacts.elastic.co/GPG-KEY-elasticsearch"
+    packages: ["elasticsearch-7.10*"]
+
 # FirewallD
 firewalld:
   enabled: false
@@ -133,7 +142,6 @@ firewalld:
 # FirewallD -> install
 firewalld_install:
   enabled: false
-  packages: [firewalld]
 
 # FirewallD -> rules
 firewalld_rules:
