@@ -120,6 +120,7 @@ elasticsearch_yml:
     path.data: /var/lib/elasticsearch
     path.logs: /var/log/elasticsearch
 
+# ElasticSearch -> constants
 elasticsearch_const:
   Debian:
     dependencies: [apt-transport-https, gnupg2, ca-certificates, openjdk-11-jdk]
